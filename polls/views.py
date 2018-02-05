@@ -55,3 +55,8 @@ def vote(request, question_id):
         # user hits the Back button.
         return HttpResponseRedirect(reverse('polls:results',
                                             args=(question.id,)))
+
+
+class ServiceWorker(generic.TemplateView):
+    template_name = "polls/serviceworker.js"
+    content_type = "application/javascript"
