@@ -9,5 +9,6 @@ urlpatterns = [
     url(r'^(?P<pk>[0-9]+)/results/$', views.ResultsView.as_view(),
         name='results'),
     url(r'^(?P<question_id>[0-9]+)/vote/$', views.vote, name='vote'),
-    url(r'^serviceworker.js$', views.ServiceWorker.as_view())
+    url(r'^serviceworker.js$', views.ServiceWorker.as_view()),
+    url(r'^offline/$', views.OfflineView.as_view(), name='offline')
 ]

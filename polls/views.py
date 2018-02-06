@@ -60,3 +60,7 @@ def vote(request, question_id):
 class ServiceWorker(generic.TemplateView):
     template_name = "polls/serviceworker.js"
     content_type = "application/javascript"
+
+
+class OfflineView(generic.TemplateView):
+    template_name = "polls/offline.html"
