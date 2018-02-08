@@ -1,8 +1,9 @@
-var CACHE_NAME = "polls-cache-v2";
+var CACHE_NAME = "polls-cache-v3";
 var CACHED_URLS = [
   "/polls/offline/",
   "/static/polls/style.css",
-  "/static/polls/images/background.png"
+  "/static/polls/images/background.png",
+  "/static/polls/app.js"
 ]
 
 self.addEventListener("install", function(event){
@@ -31,18 +32,38 @@ self.addEventListener("activate", function(event){
 });
 
 self.addEventListener("fetch", function(event){
-  event.respondWith(// answer the request with ...
-    fetch(event.request) // try to fetch from server
-      .catch(function(){ // if this is rejected
-        return caches.match(event.request) // try to return from cache
-          .then(function(response){ // caches.match allways resolves
-            if (response) { // check if something was found in cache
-              return response;
-            } else if (event.request.headers.get("accept").includes("text/html")){
-              // requesting a html file and not finding a match in cache
-              return caches.match("/polls/offline/")
-            }
+  var requestURL = new URL(event.request.url);
+  // request for a html file
+  if (event.request.headers.get("accept").includes("text/html")){
+    event.respondWith( // answer the request with ...
+      caches.open(CACHE_NAME).then(function(cache){ //open cache
+        return fetch(event.request) // try to fetch from server
+          .then(function(networkResponse){ //if suceeds
+            if (networkResponse.ok){ //if it is not some errorpage
+              //put a copy of the response in the cache
+              cache.put(event.request, networkResponse.clone());
+            };
+            return networkResponse; // and return the response
+          }).catch(function(){ // if fetching from server fails
+            // return copy from cache or offline page from cache
+            return cache.match(event.request).then(function(response){
+              return response || cache.match("/polls/offline/");
+            });
           });
       })
-  );
+    );
+  //request is one of the resources cached during registration
+  } else if(
+    CACHED_URLS.includes(requestURL.href) ||
+    CACHED_URLS.includes(requestURL.pathname)
+  ){
+    event.respondWith( // answer the request with ...
+      caches.open(CACHE_NAME).then(function(cache){ // open cache
+        return cache.match(event.request).then(function(response){
+          // return matched result from cache or try to fetch from network
+          return response || fetch(event.request);
+        });
+      })
+    );
+  };
 });
