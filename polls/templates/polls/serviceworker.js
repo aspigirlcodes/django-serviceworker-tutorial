@@ -1,4 +1,4 @@
-var CACHE_NAME = "polls-cache-v3";
+var CACHE_NAME = "polls-cache-v4";
 var CACHED_URLS = [
   "/polls/offline/",
   "/static/polls/style.css",
@@ -65,5 +65,15 @@ self.addEventListener("fetch", function(event){
         });
       })
     );
+  };
+});
+
+self.addEventListener("message", function(event){
+  if (event.data === "offline?"){ // check the message data
+    fetch("/polls/").catch(function(response){ // fetch from the network and if it fails
+      self.clients.get(event.source.id).then(function(client){ // get the client that sent this message
+        client.postMessage("offline"); // and send a confirmation message
+      });
+    });
   };
 });

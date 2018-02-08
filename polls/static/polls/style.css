@@ -3,9 +3,14 @@ html, body{
 }
 
 li a {
-    color: green;
+  color: green;
 }
 
 body {
-    background: white url("images/background.png") no-repeat right bottom;
+  background: white url("images/background.png") no-repeat right bottom;
+}
+
+.alert{
+  background-color: #F8D7DA;
+  color: #7A1C2F;
 }
